@@ -8,3 +8,16 @@ logging:
     com:
       github:
         messenger4j: INFO
+
+        
+#spring.jpa.properties.hibernate.dialect : org.hibernate.dialect.MySQL5Dialect       
+#spring.datasource.url: jdbc:mysql://localhost:3306/messenger_bot?useUnicode=yes&characterEncoding=UTF-8
+#spring.datasource.username: root
+#spring.datasource.password: root
+
+spring.datasource.url: jdbc:oracle:thin:@10.195.5.150:1521:webtst
+spring.datasource.username: selfservices
+spring.datasource.password: idc
+spring.datasource.driver-class-name: oracle.jdbc.OracleDriver
+
+spring.jpa.show-sql: true

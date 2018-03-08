@@ -1,0 +1,70 @@
+package com.chatbot.entity;
+
+import java.io.Serializable;
+import javax.persistence.*;
+import java.util.List;
+
+
+/**
+ * The persistent class for the BOT_MESSAGE_TYPES database table.
+ * 
+ */
+@Entity
+@Table(name="BOT_MESSAGE_TYPES")
+@NamedQuery(name="BotMessageType.findAll", query="SELECT b FROM BotMessageType b")
+public class BotMessageType implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name="MESSAGE_TYPE_ID")
+	private long messageTypeId;
+
+	@Column(name="MESSAGE_TYPE_NAME")
+	private String messageTypeName;
+
+	//bi-directional many-to-one association to BotInteractionMessage
+	@OneToMany(mappedBy="botMessageType")
+	private List<BotInteractionMessage> botInteractionMessages;
+
+	public BotMessageType() {
+	}
+
+	public long getMessageTypeId() {
+		return this.messageTypeId;
+	}
+
+	public void setMessageTypeId(long messageTypeId) {
+		this.messageTypeId = messageTypeId;
+	}
+
+	public String getMessageTypeName() {
+		return this.messageTypeName;
+	}
+
+	public void setMessageTypeName(String messageTypeName) {
+		this.messageTypeName = messageTypeName;
+	}
+
+	public List<BotInteractionMessage> getBotInteractionMessages() {
+		return this.botInteractionMessages;
+	}
+
+	public void setBotInteractionMessages(List<BotInteractionMessage> botInteractionMessages) {
+		this.botInteractionMessages = botInteractionMessages;
+	}
+
+	public BotInteractionMessage addBotInteractionMessage(BotInteractionMessage botInteractionMessage) {
+		getBotInteractionMessages().add(botInteractionMessage);
+		botInteractionMessage.setBotMessageType(this);
+
+		return botInteractionMessage;
+	}
+
+	public BotInteractionMessage removeBotInteractionMessage(BotInteractionMessage botInteractionMessage) {
+		getBotInteractionMessages().remove(botInteractionMessage);
+		botInteractionMessage.setBotMessageType(null);
+
+		return botInteractionMessage;
+	}
+
+}

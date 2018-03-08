@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatbot.entity.BotInteractionMessage;
+import com.chatbot.services.ChatBotService;
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
@@ -35,7 +37,9 @@ import com.github.messenger4j.send.message.template.GenericTemplate;
 import com.github.messenger4j.send.message.template.Template;
 import com.github.messenger4j.send.message.template.button.Button;
 import com.github.messenger4j.send.message.template.button.PostbackButton;
+import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.message.template.common.Element;
+import com.github.messenger4j.webhook.event.AccountLinkingEvent;
 import com.github.messenger4j.webhook.event.PostbackEvent;
 import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
@@ -43,8 +47,11 @@ import com.github.messenger4j.webhook.event.TextMessageEvent;
 @RestController
 @RequestMapping("/callback")
 public class ChatBotController {
-
+	@Autowired
 	private final Messenger messenger;
+
+	@Autowired
+	private ChatBotService chatBotService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ChatBotController.class);
 
@@ -102,7 +109,18 @@ public class ChatBotController {
 				} else if (event.isPostbackEvent()) {
 					PostbackEvent postbackEvent = event.asPostbackEvent();
 					String text = postbackEvent.payload().get();
+					List<BotInteractionMessage> interactionMessageList = chatBotService.findByBotInteractionInteractionId(0L);
+					System.out.println(interactionMessageList.get(0).getMessagePriority());
 					sendQuickReplyMessage(text, messenger, senderId);
+				} else if (event.isAccountLinkingEvent()) {
+					AccountLinkingEvent accountLinkingEvent = event.asAccountLinkingEvent();
+
+					if (accountLinkingEvent.status().equals(AccountLinkingEvent.Status.LINKED)) {
+						String authorizationCode = accountLinkingEvent.authorizationCode().get();
+					} else {
+
+					}
+					// sendQuickReplyMessage(authorizationCode, messenger, senderId);
 				}
 
 			});
@@ -178,7 +196,14 @@ public class ChatBotController {
 		buttons2.add(button22);
 		Optional<List<Button>> buttons2Op = Optional.of(buttons2);
 
-		Button button31 = PostbackButton.create("button1", "button1 in element3");
+		URL buttonURL = null;
+		try {
+			buttonURL = new URL("https://my.etisalat.eg");
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Button button31 = UrlButton.create("button1", buttonURL);
 		Button button32 = PostbackButton.create("button2", "button2 in element3");
 		List<Button> buttons3 = new ArrayList<>();
 		buttons3.add(button31);
